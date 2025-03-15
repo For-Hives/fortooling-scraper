@@ -1,23 +1,27 @@
 {
-  "name": "fortooling-scraper",
+  "name": "diplomeo-scraper",
   "version": "1.0.0",
-  "main": "node-scraper.js",
+  "description": "Web scraper pour extraire les données des écoles depuis Diplomeo",
+  "main": "src/scraper.js",
   "scripts": {
+    "scrape": "node scripts/scrape-all.js",
+    "scrape:headless": "node scripts/scrape-headless.js",
+    "start": "node src/scraper.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/For-Hives/fortooling-scraper.git"
-  },
-  "keywords": [],
+  "keywords": [
+    "scraper",
+    "playwright",
+    "diplomeo",
+    "education",
+    "web-scraping"
+  ],
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/For-Hives/fortooling-scraper/issues"
-  },
-  "homepage": "https://github.com/For-Hives/fortooling-scraper#readme",
-  "description": "",
+  "license": "MIT",
   "dependencies": {
-    "playwright": "^1.51.0"
+    "playwright": "^1.39.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
-}
+} 

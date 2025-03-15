@@ -1,0 +1,23 @@
+{
+  "name": "fortooling-scraper",
+  "version": "1.0.0",
+  "main": "node-scraper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/For-Hives/fortooling-scraper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/For-Hives/fortooling-scraper/issues"
+  },
+  "homepage": "https://github.com/For-Hives/fortooling-scraper#readme",
+  "description": "",
+  "dependencies": {
+    "playwright": "^1.51.0"
+  }
+}

@@ -1,103 +1,107 @@
 # Diplomeo Scraper
 
-Ce projet est un web scraper qui extrait les informations des écoles sur le site Diplomeo.
+Un outil de scraping pour extraire des informations sur les écoles depuis le site Diplomeo.
+
+## Structure du projet
+
+```
+diplomeo-scraper/
+├── data/               # Données extraites (JSON)
+│   └── archive/        # Archives des précédentes extractions
+├── screenshots/        # Captures d'écran générées pendant le scraping
+│   └── archive/        # Archives des précédentes captures d'écran
+├── scripts/            # Scripts d'exécution
+│   ├── scrape-all.js   # Lance le scraper en mode normal
+│   ├── scrape-headless.js # Lance le scraper en mode headless (production)
+│   └── node-scraper-legacy.js # Ancienne version pour référence
+├── src/                # Code source principal
+│   ├── scraper.js      # Script principal de scraping
+│   └── utils/          # Modules utilitaires
+│       ├── cookieConsentHandler.js # Gestion des popups de cookies
+│       ├── schoolExtractor.js      # Extraction des données des écoles
+│       └── scraperUtils.js         # Fonctions utilitaires diverses
+├── package.json        # Dépendances et scripts
+└── README.md           # Documentation
+```
 
 ## Fonctionnalités
 
-- Extraction des informations des écoles (nom, ville, secteur)
-- Récupération des emails, numéros de téléphone et sites web des établissements
-- Gestion automatique des popups de cookies
-- Gestion de l'infinite scroll pour charger plus d'écoles
-- Décodage des emails et URLs encodés par le site
+- Extraction des informations de contact (email, téléphone, site web) des écoles
+- Gestion automatique de la popup de consentement des cookies
+- Support du chargement progressif via le bouton "Voir plus"
+- Support de la pagination
+- Extraction robuste avec plusieurs stratégies de secours
+- Nettoyage et correction des données extraites
+- Sauvegarde régulière des données intermédiaires
 
 ## Prérequis
 
-- Node.js v14+ 
+- Node.js 14+
 - npm ou yarn
 
 ## Installation
 
-1. Cloner ce dépôt :
-```bash
-git clone https://github.com/votre-utilisateur/diplomeo-scraper.git
-cd diplomeo-scraper
-```
+1. Cloner le dépôt
+   ```
+   git clone https://github.com/votre-utilisateur/diplomeo-scraper.git
+   cd diplomeo-scraper
+   ```
 
-2. Installer les dépendances :
-```bash
-npm install
-# ou
-yarn install
-```
+2. Installer les dépendances
+   ```
+   npm install
+   ```
 
-3. Installer les navigateurs pour Playwright :
-```bash
-npx playwright install chromium
-```
+3. Installer les navigateurs de Playwright
+   ```
+   npx playwright install chromium
+   ```
 
 ## Utilisation
 
-Plusieurs scripts sont disponibles :
+### Mode développement (avec interface graphique)
 
-### 1. Script principal avec toutes les fonctionnalités
-
-```bash
-node node-scraper-final.js
+```
+node scripts/scrape-all.js
 ```
 
-Ce script :
-- Gère la popup de consentement des cookies
-- Récupère la liste des écoles
-- Tente de charger plus d'écoles en faisant défiler la page et en cliquant sur le bouton "Voir plus"
-- Visite chaque page d'école pour extraire les informations de contact
-- Décode les emails et sites web encodés
-- Sauvegarde les données dans plusieurs fichiers JSON
+ou
 
-### 2. Script simplifié (pour tests)
-
-```bash
-node node-scraper.js
+```
+npm run scrape
 ```
 
-### 3. Script avec pagination uniquement
+### Mode production (sans interface graphique)
 
-```bash
-node node-scraper-pagination.js
+```
+node scripts/scrape-headless.js
 ```
 
-### 4. Script avec infinite scroll
+ou
 
-```bash
-node node-scraper-infinite.js
+```
+npm run scrape:headless
 ```
 
-## Fichiers générés
+## Données extraites
 
-- `schools_list.json` : Liste des écoles avec leurs URLs
+Les données sont sauvegardées dans le dossier `data/` au format JSON :
+
+- `schools_list.json` : Liste des écoles trouvées avec leur URL
 - `schools_data_complete.json` : Données complètes des écoles
-- `schools_data_cleaned.json` : Données nettoyées avec les emails et sites web correctement formatés
-- Plusieurs captures d'écran pour le débogage
+- `schools_data_cleaned.json` : Données nettoyées avec corrections
+- `schools_data_progress.json` : Sauvegarde intermédiaire pendant l'exécution
 
-## Remarques importantes
+## Captures d'écran
 
-### Format des données
+Les captures d'écran sont sauvegardées dans le dossier `screenshots/` pour aider au diagnostic et à la vérification du processus de scraping.
 
-Les emails et sites web sont encodés par Diplomeo pour empêcher le scraping automatisé. Ce script implémente un décodage spécifique pour récupérer les informations correctes.
+## Problèmes connus
 
-Notez que certains emails peuvent avoir des suffixes incorrects (.frs au lieu de .fr ou .coms au lieu de .com) car le site utilise un encodage personnalisé.
+- Le bouton "Voir plus" peut parfois ne pas être détecté correctement si le site change sa structure HTML
+- La popup de consentement des cookies peut varier selon les régions ou les mises à jour du site
+- Certaines écoles peuvent ne pas avoir toutes les informations de contact (email, téléphone, site web)
 
-### Limitations
+## Licence
 
-- Le script ne récupère actuellement qu'environ 10-20 écoles, ce qui est probablement limité par la façon dont le site charge les résultats
-- Le site web peut changer sa structure à tout moment, ce qui nécessiterait des mises à jour du script
-
-### Performance
-
-Le script est configuré avec `headless: false` pour le débogage. Pour une exécution plus rapide en production, changez cette valeur à `true` dans le fichier de script.
-
-## Modifications possibles
-
-- Ajouter un filtrage par secteur d'activité
-- Ajouter une pagination manuelle ou d'autres approches pour récupérer plus d'écoles
-- Implémenter un export vers CSV ou Excel
-- Ajouter des proxies pour éviter les limitations de taux 
+Ce projet est sous licence [MIT](LICENSE) 
