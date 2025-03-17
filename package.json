@@ -6,7 +6,10 @@
   "scripts": {
     "scrape": "node scripts/scrape-all.js",
     "scrape:headless": "node scripts/scrape-headless.js",
+    "scrape:all": "node scripts/scrape-all-schools.js",
+    "scrape:all:headless": "node scripts/scrape-all-headless.js",
     "start": "node src/scraper.js",
+    "export:odoo": "node scripts/export-to-odoo.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
