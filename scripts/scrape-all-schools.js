@@ -17,8 +17,8 @@ const isHeadless = process.argv.includes('--headless');
 
 // URL de base et nombre maximum de pages à parcourir
 const BASE_URL = 'https://diplomeo.com/etablissements/resultats';
-const MAX_PAGES = 30; // Nombre maximum de pages à parcourir avec pagination
-const MAX_SCROLLS = 30; // Nombre maximum de défilements pour "voir plus"
+const MAX_PAGES = 300; // Nombre maximum de pages à parcourir avec pagination
+const MAX_SCROLLS = 300; // Nombre maximum de défilements pour "voir plus"
 const MAX_SCHOOLS = 1700; // Nombre cible d'écoles à récupérer
 
 // Créer les dossiers nécessaires
