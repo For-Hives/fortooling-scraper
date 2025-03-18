@@ -10,6 +10,7 @@
     "scrape:all:headless": "node scripts/scrape-all-headless.js",
     "process:sector": "node scripts/process-by-sector.js",
     "report:sector": "node scripts/generate-sector-report.js",
+    "export:sector-csv": "node scripts/export-sector-csv.js",
     "start": "node src/scraper.js",
     "export:odoo": "node scripts/export-to-odoo.js",
     "test": "echo \"Error: no test specified\" && exit 1"
