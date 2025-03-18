@@ -8,6 +8,8 @@
     "scrape:headless": "node scripts/scrape-headless.js",
     "scrape:all": "node scripts/scrape-all-schools.js",
     "scrape:all:headless": "node scripts/scrape-all-headless.js",
+    "process:sector": "node scripts/process-by-sector.js",
+    "report:sector": "node scripts/generate-sector-report.js",
     "start": "node src/scraper.js",
     "export:odoo": "node scripts/export-to-odoo.js",
     "test": "echo \"Error: no test specified\" && exit 1"
