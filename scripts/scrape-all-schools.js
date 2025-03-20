@@ -17,9 +17,10 @@ const isHeadless = process.argv.includes('--headless');
 
 // URL de base et nombre maximum de pages à parcourir
 const BASE_URL = 'https://diplomeo.com/etablissements/resultats';
-const MAX_PAGES = 300; // Nombre maximum de pages à parcourir avec pagination
-const MAX_SCROLLS = 300; // Nombre maximum de défilements pour "voir plus"
-const MAX_SCHOOLS = 1700; // Nombre cible d'écoles à récupérer
+const MAX_PAGES = 500; // Augmentation significative du nombre de pages
+const MAX_SCROLLS = 300; // Augmentation du nombre de défilements
+const MAX_SCHOOLS = 10000; // Objectif de 10 000 écoles
+const SCROLL_BATCH_SIZE = 50; // Nombre d'écoles par lot de défilement
 
 // Créer les dossiers nécessaires
 const ensureDirExists = (dir) => {
@@ -163,7 +164,7 @@ async function run() {
 
 /**
  * Charge les écoles en utilisant le défilement et le bouton "voir plus"
- * Méthode améliorée pour supporter plus de défilements
+ * Méthode améliorée pour accumuler les écoles au lieu de les remplacer
  */
 async function loadWithScrolling(page, allSchoolLinks) {
   console.log('Accès à la page de résultats...');
@@ -194,6 +195,9 @@ async function loadWithScrolling(page, allSchoolLinks) {
   let previousSchoolCount = 0;
   let noChangeCount = 0;
   
+  // Utiliser un Set pour stocker les URLs uniques globalement
+  const globalUniqueUrls = new Set(allSchoolLinks.map(school => school.url));
+  
   // Stratégie de défilement intensif pour charger plus d'écoles
   console.log('Défilement intensif pour charger plus d\'écoles...');
   
@@ -205,15 +209,28 @@ async function loadWithScrolling(page, allSchoolLinks) {
     await page.waitForTimeout(2000);
     
     // Prendre une capture d'écran périodique (pas à chaque défilement pour économiser de l'espace)
-    if (i % 5 === 0) {
+    if (i % 10 === 0) {
       await page.screenshot({ path: path.join(SCREENSHOTS_DIR, `scroll-${i+1}.png`) });
     }
     
-    // Essayer de cliquer sur le bouton "voir plus"
-    const buttonClicked = await clickSeeMoreButton(page);
+    // Cliquer plusieurs fois sur le bouton "voir plus" pour maximiser le chargement
+    let buttonClickCount = 0;
+    let buttonClicked = false;
     
-    // Si le bouton n'a pas été trouvé/cliqué, essayer un défilement supplémentaire
-    if (!buttonClicked) {
+    // Faire plusieurs tentatives de clic (maximum 3)
+    for (let clickAttempt = 0; clickAttempt < 3; clickAttempt++) {
+      buttonClicked = await clickSeeMoreButton(page);
+      if (buttonClicked) {
+        buttonClickCount++;
+        await page.waitForTimeout(1500); // Attendre le chargement
+      } else {
+        break;
+      }
+    }
+    
+    if (buttonClickCount > 0) {
+      console.log(`Bouton "voir plus" cliqué ${buttonClickCount} fois`);
+    } else {
       console.log('Bouton non trouvé, essai de défilement supplémentaire...');
       await page.evaluate(() => {
         window.scrollBy(0, -300); // Remonter un peu pour voir si le bouton apparaît
@@ -222,23 +239,23 @@ async function loadWithScrolling(page, allSchoolLinks) {
       await clickSeeMoreButton(page);
     }
     
-    // Attendre le chargement
-    await page.waitForTimeout(2500);
+    // Attendre le chargement complet
+    await page.waitForTimeout(3000);
     
     // Vérifier si nous avons de nouvelles écoles
     const currentSchools = await extractSchoolLinks(page);
     console.log(`${currentSchools.length} écoles trouvées après le défilement ${i+1}`);
     
-    // Ajouter les écoles à notre collection
+    // Ajouter les écoles à notre collection (seulement les nouvelles)
     if (currentSchools.length > 0) {
-      // Vérifier si nous avons de nouvelles écoles
+      // Vérifier si nous avons de nouvelles écoles par rapport au défilement précédent
       if (currentSchools.length === previousSchoolCount) {
         noChangeCount++;
         console.log(`Aucune nouvelle école trouvée (${noChangeCount} fois consécutives)`);
         
-        // Si pas de nouvelles écoles pendant 3 défilements consécutifs, on arrête
-        if (noChangeCount >= 3) {
-          console.log('Pas de nouvelles écoles depuis 3 défilements, arrêt du défilement');
+        // Si pas de nouvelles écoles pendant 5 défilements consécutifs, on arrête
+        if (noChangeCount >= 5) {
+          console.log('Pas de nouvelles écoles depuis 5 défilements, arrêt du défilement');
           break;
         }
       } else {
@@ -247,11 +264,21 @@ async function loadWithScrolling(page, allSchoolLinks) {
         previousSchoolCount = currentSchools.length;
       }
       
-      // Ajouter les écoles
-      allSchoolLinks.push(...currentSchools);
+      // Ajouter chaque école en vérifiant les doublons par URL
+      let newSchoolsCount = 0;
+      for (const school of currentSchools) {
+        if (!globalUniqueUrls.has(school.url)) {
+          globalUniqueUrls.add(school.url);
+          allSchoolLinks.push(school);
+          newSchoolsCount++;
+        }
+      }
+      
+      // Afficher le compte réel d'écoles uniques ajoutées
+      console.log(`${newSchoolsCount} nouvelles écoles ajoutées (total: ${allSchoolLinks.length})`);
       
       // Sauvegarde périodique
-      if (i % 5 === 0) {
+      if (i % 5 === 0 || newSchoolsCount > 0) {
         saveIntermediateData(allSchoolLinks, 'links_scroll');
       }
       
@@ -260,6 +287,12 @@ async function loadWithScrolling(page, allSchoolLinks) {
         console.log(`Nombre cible d'écoles atteint (${allSchoolLinks.length}), arrêt du défilement`);
         break;
       }
+      
+      // Si nous avons collecté un nombre substantiel, faire une pause pour réduire la charge serveur
+      if (newSchoolsCount > SCROLL_BATCH_SIZE) {
+        console.log(`Pause de 5 secondes après avoir collecté ${newSchoolsCount} écoles`);
+        await delay(5000);
+      }
     }
   }
   
@@ -267,19 +300,49 @@ async function loadWithScrolling(page, allSchoolLinks) {
 }
 
 /**
- * Charge les écoles en utilisant la pagination
- * Méthode améliorée pour supporter plus de pages
+ * Charge les écoles en utilisant la pagination avec différentes pages et filtres
+ * Méthode améliorée pour extraire plus d'écoles
  */
 async function loadWithPagination(page, allSchoolLinks) {
-  const pageUrls = generatePageUrls(BASE_URL, MAX_PAGES);
+  // Générer plusieurs ensembles d'URLs pour différentes configurations de recherche
+  const mainPageUrls = generatePageUrls(BASE_URL, MAX_PAGES);
   
-  for (let i = 0; i < pageUrls.length; i++) {
-    console.log(`Visite de la page ${i+1}/${pageUrls.length}: ${pageUrls[i]}`);
+  // Ajouter d'autres configurations de recherche pour maximiser les résultats
+  const searchConfigs = [
+    { name: "Paris", param: "?filter=paris" },
+    { name: "Lyon", param: "?filter=lyon" },
+    { name: "Marseille", param: "?filter=marseille" },
+    { name: "Niveau Bac", param: "?niveau=bac" },
+    { name: "Niveau Bac+2", param: "?niveau=bac-plus-2" },
+    { name: "Niveau Bac+3", param: "?niveau=bac-plus-3" },
+    { name: "Niveau Bac+5", param: "?niveau=bac-plus-5" }
+  ];
+  
+  // Créer des URLs supplémentaires basées sur les configurations
+  let additionalPageUrls = [];
+  for (const config of searchConfigs) {
+    const configUrls = generatePageUrls(`${BASE_URL}${config.param}`, Math.floor(MAX_PAGES / 5));
+    console.log(`Ajout de ${configUrls.length} URLs pour la configuration "${config.name}"`);
+    additionalPageUrls = [...additionalPageUrls, ...configUrls];
+  }
+  
+  // Combiner tous les ensembles d'URLs
+  const allPageUrls = [...mainPageUrls, ...additionalPageUrls];
+  console.log(`Total: ${allPageUrls.length} URLs de pagination générées`);
+  
+  // Stocker les URLs d'écoles déjà collectées pour éviter les doublons
+  const uniqueSchoolUrls = new Set(allSchoolLinks.map(school => school.url));
+  
+  // Parcourir toutes les URLs de pagination
+  let paginationCounter = 0;
+  for (let i = 0; i < allPageUrls.length; i++) {
+    paginationCounter++;
+    console.log(`Visite de la page ${paginationCounter}/${allPageUrls.length}: ${allPageUrls[i]}`);
     
     try {
-      await page.goto(pageUrls[i], { timeout: 90000, waitUntil: 'networkidle' });
+      await page.goto(allPageUrls[i], { timeout: 90000, waitUntil: 'networkidle' });
       
-      // Gérer la popup des cookies si nécessaire (seulement sur les premières pages)
+      // Gérer la popup des cookies si nécessaire (seulement périodiquement)
       if (i % 10 === 0) {
         try {
           await handleCookieConsent(page);
@@ -298,7 +361,7 @@ async function loadWithPagination(page, allSchoolLinks) {
       }
       
       // Prendre une capture d'écran périodique
-      if (i % 5 === 0) {
+      if (i % 20 === 0) {
         try {
           await page.screenshot({ path: path.join(SCREENSHOTS_DIR, `page-${i+1}.png`) });
         } catch (error) {
@@ -306,16 +369,32 @@ async function loadWithPagination(page, allSchoolLinks) {
         }
       }
       
+      // Faire défiler la page pour charger plus d'écoles
+      for (let scroll = 0; scroll < 3; scroll++) {
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+        await page.waitForTimeout(1000);
+      }
+      
       // Extraire les écoles de cette page
       const schoolLinks = await extractSchoolLinks(page);
       console.log(`${schoolLinks.length} écoles trouvées sur la page ${i+1}`);
       
-      // Ajouter les écoles à notre collection
+      // Ajouter uniquement les nouvelles écoles (non dupliquées)
+      let newSchoolsCount = 0;
+      
       if (schoolLinks.length > 0) {
-        allSchoolLinks.push(...schoolLinks);
+        for (const school of schoolLinks) {
+          if (!uniqueSchoolUrls.has(school.url)) {
+            uniqueSchoolUrls.add(school.url);
+            allSchoolLinks.push(school);
+            newSchoolsCount++;
+          }
+        }
         
-        // Sauvegarde périodique
-        if (i % 5 === 0) {
+        console.log(`${newSchoolsCount} nouvelles écoles ajoutées (total: ${allSchoolLinks.length})`);
+        
+        // Sauvegarde périodique (seulement si des écoles ont été ajoutées)
+        if ((i % 10 === 0) && newSchoolsCount > 0) {
           saveIntermediateData(allSchoolLinks, 'links_pagination');
         }
       }
@@ -327,11 +406,11 @@ async function loadWithPagination(page, allSchoolLinks) {
       }
       
       // Attente entre les pages pour ne pas surcharger le serveur
-      await delay(2000);
+      await delay(2000 + Math.random() * 2000); // Délai aléatoire entre 2 et 4 secondes
     } catch (error) {
       console.error(`Erreur lors du traitement de la page ${i+1}:`, error);
       // Continuer avec la page suivante, mais faire une pause plus longue
-      await delay(5000);
+      await delay(5000 + Math.random() * 3000);
     }
   }
   
@@ -343,7 +422,7 @@ async function loadWithPagination(page, allSchoolLinks) {
  * Approche complémentaire pour récupérer plus d'écoles
  */
 async function loadWithSectorFilters(page, allSchoolLinks) {
-  // Liste des secteurs disponibles sur Diplomeo
+  // Liste des secteurs disponibles sur Diplomeo (liste étendue)
   const sectors = [
     'Communication',
     'Commerce',
@@ -360,9 +439,34 @@ async function loadWithSectorFilters(page, allSchoolLinks) {
     'Graphisme',
     'Ressources Humaines',
     'Tourisme',
-    'Architecture'
+    'Architecture',
+    'Droit',
+    'Comptabilité',
+    'Audiovisuel',
+    'Agriculture',
+    'Environnement',
+    'Luxe',
+    'Éducation',
+    'Mode',
+    'Sport',
+    'Immobilier',
+    'Psychologie',
+    'Sciences',
+    'Médecine',
+    'Artisanat',
+    'Hôtellerie',
+    'Restauration',
+    'Aéronautique',
+    'Automobile'
   ];
   
+  // Liste des villes importantes pour combiner avec les secteurs
+  const cities = ['Paris', 'Lyon', 'Marseille', 'Bordeaux', 'Lille', 'Nantes', 'Toulouse', 'Montpellier'];
+  
+  // Stocker les URLs d'écoles déjà collectées pour éviter les doublons
+  const uniqueSchoolUrls = new Set(allSchoolLinks.map(school => school.url));
+  
+  // 1. D'abord, parcourir tous les secteurs individuellement
   for (let i = 0; i < sectors.length; i++) {
     const sector = sectors[i];
     console.log(`Filtrage par secteur: ${sector} (${i+1}/${sectors.length})`);
@@ -390,11 +494,6 @@ async function loadWithSectorFilters(page, allSchoolLinks) {
         continue;
       }
       
-      // Prendre une capture d'écran
-      if (i % 3 === 0) {
-        await page.screenshot({ path: path.join(SCREENSHOTS_DIR, `sector-${sector}.png`) });
-      }
-      
       // Faire quelques défilements pour charger plus d'écoles
       for (let j = 0; j < 5; j++) {
         await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
@@ -406,12 +505,22 @@ async function loadWithSectorFilters(page, allSchoolLinks) {
       const sectorSchools = await extractSchoolLinks(page);
       console.log(`${sectorSchools.length} écoles trouvées pour le secteur ${sector}`);
       
-      // Ajouter les écoles à notre collection
+      // Ajouter uniquement les nouvelles écoles (non dupliquées)
+      let newSchoolsCount = 0;
+      
       if (sectorSchools.length > 0) {
-        allSchoolLinks.push(...sectorSchools);
+        for (const school of sectorSchools) {
+          if (!uniqueSchoolUrls.has(school.url)) {
+            uniqueSchoolUrls.add(school.url);
+            allSchoolLinks.push(school);
+            newSchoolsCount++;
+          }
+        }
+        
+        console.log(`${newSchoolsCount} nouvelles écoles ajoutées (total: ${allSchoolLinks.length})`);
         
         // Sauvegarde périodique
-        if (i % 3 === 0) {
+        if (i % 3 === 0 || newSchoolsCount > 20) {
           saveIntermediateData(allSchoolLinks, 'links_sectors');
         }
       }
@@ -423,10 +532,92 @@ async function loadWithSectorFilters(page, allSchoolLinks) {
       }
       
       // Attente entre les secteurs
-      await delay(2000);
+      await delay(2000 + Math.random() * 1000);
     } catch (error) {
       console.error(`Erreur lors du traitement du secteur ${sector}:`, error);
       // Continuer avec le secteur suivant
+    }
+  }
+  
+  // 2. Ensuite, combiner secteurs et villes pour plus de résultats (si nous n'avons pas atteint l'objectif)
+  if (allSchoolLinks.length < MAX_SCHOOLS) {
+    console.log("=== Filtrage par combinaison secteur+ville ===");
+    
+    // Limiter aux secteurs principaux pour éviter trop de requêtes
+    const mainSectors = sectors.slice(0, 10);
+    
+    for (let i = 0; i < mainSectors.length; i++) {
+      const sector = mainSectors[i];
+      
+      for (let j = 0; j < cities.length; j++) {
+        const city = cities[j];
+        console.log(`Filtrage par secteur+ville: ${sector} - ${city}`);
+        
+        // Construire l'URL avec le filtre de secteur et ville
+        const url = `${BASE_URL}?f[0]=field_domain:${encodeURIComponent(sector)}&ville=${encodeURIComponent(city)}`;
+        
+        try {
+          await page.goto(url, { timeout: 60000, waitUntil: 'networkidle' });
+          
+          // Gérer les cookies si nécessaire
+          if ((i * cities.length + j) % 10 === 0) {
+            try {
+              await handleCookieConsent(page);
+            } catch (error) {
+              console.error('Erreur lors de la gestion des cookies, mais on continue:', error);
+            }
+          }
+          
+          // Attendre le chargement
+          try {
+            await page.waitForSelector('ul[data-cy="hub-schools-results"]', { timeout: 10000 });
+          } catch (error) {
+            console.log(`Pas de résultats pour ${sector} - ${city}, passage au suivant`);
+            continue;
+          }
+          
+          // Extraire les écoles
+          const combinedSchools = await extractSchoolLinks(page);
+          console.log(`${combinedSchools.length} écoles trouvées pour ${sector} - ${city}`);
+          
+          // Ajouter uniquement les nouvelles écoles (non dupliquées)
+          let newSchoolsCount = 0;
+          
+          if (combinedSchools.length > 0) {
+            for (const school of combinedSchools) {
+              if (!uniqueSchoolUrls.has(school.url)) {
+                uniqueSchoolUrls.add(school.url);
+                allSchoolLinks.push(school);
+                newSchoolsCount++;
+              }
+            }
+            
+            console.log(`${newSchoolsCount} nouvelles écoles ajoutées (total: ${allSchoolLinks.length})`);
+            
+            // Sauvegarde périodique si des écoles ont été ajoutées
+            if (newSchoolsCount > 10) {
+              saveIntermediateData(allSchoolLinks, 'links_combined');
+            }
+          }
+          
+          // Si nous avons suffisamment d'écoles, arrêter
+          if (allSchoolLinks.length >= MAX_SCHOOLS) {
+            console.log(`Objectif atteint (${allSchoolLinks.length} écoles), arrêt du filtrage combiné`);
+            break;
+          }
+          
+          // Attente entre les requêtes
+          await delay(1500 + Math.random() * 1000);
+        } catch (error) {
+          console.error(`Erreur lors du traitement de ${sector} - ${city}:`, error);
+          // Continuer avec la prochaine combinaison
+        }
+      }
+      
+      // Si nous avons suffisamment d'écoles, arrêter la boucle extérieure aussi
+      if (allSchoolLinks.length >= MAX_SCHOOLS) {
+        break;
+      }
     }
   }
   

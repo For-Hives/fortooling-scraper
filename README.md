@@ -8,15 +8,22 @@ Un outil de scraping pour extraire des informations sur les écoles depuis le si
 diplomeo-scraper/
 ├── data/               # Données extraites (JSON)
 │   ├── archive/        # Archives des précédentes extractions
-│   └── odoo/           # Fichiers d'exportation pour Odoo (CSV)
+│   ├── odoo/           # Fichiers d'exportation pour Odoo (CSV)
+│   ├── reports/        # Rapports d'analyse CSV et HTML
+│   │   └── html/       # Rapports interactifs
 ├── screenshots/        # Captures d'écran générées pendant le scraping
 │   └── archive/        # Archives des précédentes captures d'écran
 ├── scripts/            # Scripts d'exécution
 │   ├── scrape-all.js   # Lance le scraper en mode normal
 │   ├── scrape-headless.js # Lance le scraper en mode headless (production)
-│   ├── scrape-all-schools.js # Lance le scraper massif pour 1700+ écoles
+│   ├── scrape-all-schools.js # Lance le scraper massif pour 10000+ écoles
 │   ├── scrape-all-headless.js # Lance le scraper massif en mode headless
-│   ├── export-to-odoo.js  # Exporte les données au format CSV pour Odoo
+│   ├── process-all-schools.js # Traite les données complètes des écoles
+│   ├── export-to-odoo.js      # Exporte les données au format CSV pour Odoo
+│   ├── analyze-school-data.js     # Analyse des données par secteur
+│   ├── generate-email-report.js   # Analyse des emails
+│   ├── generate-html-report.js    # Génération de rapport HTML
+│   ├── run-all-analysis.js        # Exécution de toutes les analyses
 │   └── node-scraper-legacy.js # Ancienne version pour référence
 ├── src/                # Code source principal
 │   ├── scraper.js      # Script principal de scraping
@@ -35,11 +42,14 @@ diplomeo-scraper/
 - Gestion automatique de la popup de consentement des cookies
 - Support du chargement progressif via le bouton "Voir plus"
 - Support de la pagination
-- **Scraping massif de 1700+ écoles** via différentes stratégies combinées
+- **Scraping massif de 10000+ écoles** via différentes stratégies combinées
 - Extraction robuste avec plusieurs stratégies de secours
 - Nettoyage et correction des données extraites
 - Sauvegarde régulière des données intermédiaires
 - Exportation des données au format CSV compatible avec Odoo
+- **Analyse des données par secteur et génération de rapports**
+- **Analyse des emails et validation**
+- **Génération de rapports HTML interactifs avec visualisations**
 
 ## Prérequis
 
@@ -92,7 +102,7 @@ ou
 npm run scrape:headless
 ```
 
-### Scraping massif (1700+ écoles)
+### Scraping massif (10000+ écoles)
 
 Le scraper massif utilise trois stratégies différentes pour maximiser le nombre d'écoles extraites:
 1. Défilement intensif avec "Voir plus"
@@ -123,17 +133,58 @@ ou
 npm run scrape:all:headless
 ```
 
-#### Temps d'exécution estimé
+### Traitement des données d'écoles
 
-L'extraction complète de 1700+ écoles peut prendre plusieurs heures (4-8h selon la connexion). Le script est conçu pour:
-- Sauvegarder régulièrement les données intermédiaires
-- Traiter les écoles par lots pour éviter de tout perdre en cas d'erreur
-- Gérer les erreurs de navigation et les tentatives de reconnexion
-- Pouvoir être interrompu et reprendre ultérieurement
+Après avoir collecté les liens des écoles, utilisez ce script pour extraire les informations détaillées de chaque école:
+
+```bash
+node scripts/process-all-schools.js
+
+# Options disponibles
+# --batch=N       : Reprendre à partir du lot N
+# --limit=N       : Limiter le traitement à N lots
+# --source=FILE   : Spécifier le fichier source
+# --show-browser  : Afficher le navigateur pendant l'exécution
+```
+
+### Analyse des données
+
+Pour analyser les données collectées et générer des rapports:
+
+```bash
+# Exécuter toutes les analyses d'un seul coup
+node scripts/run-all-analysis.js
+
+# Ou exécuter les analyses individuellement:
+
+# Analyse par secteur
+node scripts/analyze-school-data.js
+
+# Analyse des emails
+node scripts/generate-email-report.js
+
+# Génération du rapport HTML
+node scripts/generate-html-report.js
+```
+
+#### Options d'analyse
+
+Tous les scripts d'analyse acceptent ces options:
+
+```bash
+--source=FILE.json   # Spécifier le fichier source à analyser
+--help               # Afficher l'aide
+```
+
+Le script `generate-html-report.js` accepte également:
+
+```bash
+--regenerate         # Régénérer les analyses avant de créer le rapport HTML
+```
 
 ### Exportation des données vers Odoo
 
-Une fois que les données ont été extraites, vous pouvez les exporter au format CSV compatible avec Odoo :
+Une fois que les données ont été extraites, vous pouvez les exporter au format CSV compatible avec Odoo:
 
 ```
 node scripts/export-to-odoo.js
@@ -145,31 +196,63 @@ ou
 npm run export:odoo
 ```
 
-Cette commande génère trois fichiers CSV dans le dossier `data/odoo/` :
-- `odoo_schools.csv` : Toutes les écoles en un seul fichier (format contacts)
-- `odoo_companies.csv` : Les écoles au format entreprises
-- `odoo_contacts.csv` : Structure pour ajouter des contacts liés aux écoles (préparé mais vide)
+Cette commande génère trois fichiers CSV dans le dossier `data/odoo/`:
+- `odoo_schools.csv`: Toutes les écoles en un seul fichier (format contacts)
+- `odoo_companies.csv`: Les écoles au format entreprises
+- `odoo_contacts.csv`: Structure pour ajouter des contacts liés aux écoles (préparé mais vide)
 
 Les fichiers générés sont prêts à être importés dans Odoo en utilisant la fonctionnalité d'import.
 
-## Données extraites
+## Données extraites et générées
 
-Les données sont sauvegardées dans le dossier `data/` au format JSON :
+### Données extraites (scraping)
 
-- `schools_list.json` : Liste des écoles trouvées avec leur URL
-- `schools_list_complete.json` : Liste complète des 1700+ écoles avec leur URL
-- `schools_data_complete.json` : Données complètes des écoles (extraction partielle)
-- `schools_data_complete_all.json` : Données complètes des 1700+ écoles
-- `schools_data_cleaned.json` : Données nettoyées avec corrections
-- `schools_data_progress.json` : Sauvegarde intermédiaire pendant l'exécution
+Les données sont sauvegardées dans le dossier `data/` au format JSON:
+
+- `schools_list.json`: Liste des écoles trouvées avec leur URL
+- `schools_list_complete.json`: Liste complète des 10000+ écoles avec leur URL
+- `schools_data_links_sectors.json`: Liste des écoles avec secteur et URL
+- `schools_data_complete.json`: Données complètes des écoles traitées
+- `schools_data_batch_*.json`: Lots de données pendant le traitement par batch
+- `schools_data_cleaned.json`: Données nettoyées avec corrections
+
+### Fichiers d'analyse
+
+Les résultats d'analyse sont également stockés dans le dossier `data/`:
+
+- `schools_by_sector.json`: Données organisées par secteur
+- `schools_report.json`: Statistiques générales (emails, téléphones, etc.)
+- `schools_emails.json`: Liste des écoles avec emails
+- `schools_emails_analysis.json`: Analyse détaillée des emails
+
+### Rapports générés
+
+Les rapports sont générés dans le dossier `data/reports/`:
+
+- Rapports CSV par secteur: `secteur_*.csv`
+- Rapport des emails valides: `emails_valides.csv`
+- Rapport HTML interactif: `html/index.html`
 
 ## Captures d'écran
 
 Les captures d'écran sont sauvegardées dans le dossier `screenshots/` pour aider au diagnostic et à la vérification du processus de scraping.
 
+## Rapport HTML interactif
+
+Le rapport HTML interactif inclut:
+
+- Distribution des écoles par secteur
+- Disponibilité des informations de contact
+- Analyse des domaines d'email
+- Tableau détaillé des statistiques par secteur
+
+Pour visualiser le rapport HTML:
+1. Exécuter `node scripts/generate-html-report.js`
+2. Ouvrir le fichier `data/reports/html/index.html` dans un navigateur
+
 ## Importation dans Odoo
 
-Pour importer les données dans Odoo, suivez ces étapes :
+Pour importer les données dans Odoo, suivez ces étapes:
 
 1. Connectez-vous à votre instance Odoo
 2. Allez dans le module Contacts

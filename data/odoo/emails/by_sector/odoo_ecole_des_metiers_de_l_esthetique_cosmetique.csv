@@ -1,0 +1,2 @@
+id,name,is_company,company_type,customer_rank,supplier_rank,type,email,phone,mobile,website,street,city,zip,country_id,function,title,parent_id,user_id,team_id,industry_id,comment,tag_ids,vat,ref,lang,date
+school_elegance_academies_info_at_elegance_fr,Elégance Académies,true,company,1,0,contact,info@elegance.fr,33493881292,,https://www.elegance.fr/?utm_source=diplomeos,,Nice,,France,,,,,,École des métiers de l'esthétique cosmétique,,"École,Diplomeo",,https://diplomeo.com/etablissement-elegance_academies-2405,fr_FR,2025-03-20

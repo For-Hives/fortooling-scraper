@@ -1,0 +1,2 @@
+id,name,is_company,company_type,customer_rank,supplier_rank,type,email,phone,mobile,website,street,city,zip,country_id,function,title,parent_id,user_id,team_id,industry_id,comment,tag_ids,vat,ref,lang,date
+school_antemed_epsilon_paris_at_supexam_fr,Antemed Epsilon,true,company,1,0,contact,paris@supexam.fr,33148071717,,https://www.antemed-epsiloon.fr?utm_source=diplomeos,,Paris 6e,,France,,,,,,Classes préparatoires aux concours,,"École,Diplomeo",,https://diplomeo.com/etablissement-antemed_epsilon-7445,fr_FR,2025-03-20

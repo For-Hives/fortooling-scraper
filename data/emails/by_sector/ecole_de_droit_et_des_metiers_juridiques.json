@@ -1,0 +1,38 @@
+[
+  {
+    "name": "HEAD",
+    "email": "accueil@ecolehead.fr",
+    "sector": "École de droit et des métiers juridiques",
+    "city": "Paris",
+    "url": "https://diplomeo.com/etablissement-head-9393",
+    "phone": "33175434310",
+    "website": "https://www.ecolehead.fr/?utm_source=diplomeos",
+    "address": "",
+    "formations": "",
+    "description": ""
+  },
+  {
+    "name": "Institut Supérieur du Droit - Campus Paris",
+    "email": "contact@ecoleisd.com",
+    "sector": "École de droit et des métiers juridiques",
+    "city": "Paris",
+    "url": "https://diplomeo.com/etablissement-institut_superieur_du_droit_campus_paris-12056",
+    "phone": "33140704615",
+    "website": "https://institutsuperieurdudroit.fr?utm_source=diplomeos",
+    "address": "",
+    "formations": "",
+    "description": ""
+  },
+  {
+    "name": "ESMD",
+    "email": "contact@esmd-droit.fr",
+    "sector": "École de droit et des métiers juridiques",
+    "city": "Paris 17e",
+    "url": "https://diplomeo.com/etablissement-esmd-22811",
+    "phone": "33189164724",
+    "website": "https://esmd-droit.fr/?utm_source=diplomeos",
+    "address": "",
+    "formations": "",
+    "description": ""
+  }
+]

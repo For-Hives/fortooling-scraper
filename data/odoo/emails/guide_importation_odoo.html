@@ -1,0 +1,534 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide d'importation Odoo - Écoles avec emails</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    header {
+      background-color: #4c956c;
+      color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 0;
+    }
+    h2 {
+      color: #2c6e49;
+      border-bottom: 2px solid #2c6e49;
+      padding-bottom: 0.5rem;
+      margin-top: 2rem;
+    }
+    h3 {
+      color: #4c956c;
+    }
+    .info {
+      background-color: #e9f5db;
+      border-left: 5px solid #4c956c;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 0 5px 5px 0;
+    }
+    .warning {
+      background-color: #ffecd1;
+      border-left: 5px solid #ff7d00;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 0 5px 5px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f5f5f5;
+      font-weight: bold;
+    }
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    .step {
+      background-color: #f9f9f9;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .step-number {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      background-color: #4c956c;
+      color: white;
+      text-align: center;
+      line-height: 30px;
+      border-radius: 50%;
+      margin-right: 0.75rem;
+    }
+    .file-main {
+      background-color: #e0f5e9;
+      padding: 1rem;
+      border-radius: 5px;
+      margin: 0.5rem 0;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin: 1rem 0;
+    }
+    .date {
+      color: #666;
+      font-style: italic;
+    }
+    footer {
+      margin-top: 4rem;
+      padding-top: 1rem;
+      border-top: 1px solid #ddd;
+      text-align: center;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Guide d'importation Odoo - Écoles avec emails</h1>
+    <p>Procédure détaillée pour importer les écoles avec emails dans Odoo</p>
+    <p class="date">Généré le 3/20/2025, 3:20:50 PM</p>
+  </header>
+
+  <div class="info">
+    <strong>Résumé:</strong> Ce guide vous accompagne dans l'importation des 513 écoles avec leurs emails dans votre instance Odoo. Les données sont organisées par secteur pour une importation ciblée.
+  </div>
+
+  <h2>1. Fichiers disponibles</h2>
+  
+  <h3>Fichier principal</h3>
+  <div class="file-main">
+    <p><strong>Nom:</strong> odoo_schools_with_emails.csv</p>
+    <p><strong>Chemin:</strong> odoo/emails/odoo_schools_with_emails.csv</p>
+    <p><strong>Nombre d'écoles:</strong> 513</p>
+    <p><strong>Taille:</strong> 193.1 Ko</p>
+  </div>
+  
+  <h3>Fichiers par secteur (32)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Secteur</th>
+        <th>Nombre d'écoles</th>
+        <th>Taille</th>
+        <th>Chemin</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+    <tr>
+      <td>ecole de gestion et de commerce</td>
+      <td>191</td>
+      <td>73.3 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_gestion_et_de_commerce.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole de l internet</td>
+      <td>49</td>
+      <td>17.5 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_l_internet.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole d ingenierie informatique</td>
+      <td>36</td>
+      <td>13.6 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_d_ingenierie_informatique.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole specialisee</td>
+      <td>32</td>
+      <td>13.3 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_specialisee.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole de communication</td>
+      <td>31</td>
+      <td>11.3 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_communication.csv</td>
+    </tr>
+  
+    <tr>
+      <td>autre etablissement d enseignement</td>
+      <td>22</td>
+      <td>8.8 Ko</td>
+      <td>odoo/emails/by_sector/odoo_autre_etablissement_d_enseignement.csv</td>
+    </tr>
+  
+    <tr>
+      <td>design graphisme 3d video mode</td>
+      <td>21</td>
+      <td>7.5 Ko</td>
+      <td>odoo/emails/by_sector/odoo_design_graphisme_3d_video_mode.csv</td>
+    </tr>
+  
+    <tr>
+      <td>centre de formation d apprentis</td>
+      <td>20</td>
+      <td>7.1 Ko</td>
+      <td>odoo/emails/by_sector/odoo_centre_de_formation_d_apprentis.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole d ingenieurs</td>
+      <td>17</td>
+      <td>6.5 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_d_ingenieurs.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole des metiers de l immobilier</td>
+      <td>17</td>
+      <td>6.7 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_des_metiers_de_l_immobilier.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole hoteliere</td>
+      <td>14</td>
+      <td>5.3 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_hoteliere.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole de photo audiovisuel cinema</td>
+      <td>10</td>
+      <td>4.9 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_photo_audiovisuel_cinema.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole d art</td>
+      <td>9</td>
+      <td>3.4 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_d_art.csv</td>
+    </tr>
+  
+    <tr>
+      <td>centre de formation professionnelle</td>
+      <td>6</td>
+      <td>2.4 Ko</td>
+      <td>odoo/emails/by_sector/odoo_centre_de_formation_professionnelle.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole de sante</td>
+      <td>6</td>
+      <td>2.4 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_sante.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole de formation sportive</td>
+      <td>5</td>
+      <td>2.2 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_formation_sportive.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole de droit et des metiers juridiques</td>
+      <td>3</td>
+      <td>1.2 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_droit_et_des_metiers_juridiques.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole de journalisme</td>
+      <td>3</td>
+      <td>1.5 Ko</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_journalisme.csv</td>
+    </tr>
+  
+    <tr>
+      <td>grande ecole de commerce</td>
+      <td>3</td>
+      <td>1.4 Ko</td>
+      <td>odoo/emails/by_sector/odoo_grande_ecole_de_commerce.csv</td>
+    </tr>
+  
+    <tr>
+      <td>non specifie</td>
+      <td>3</td>
+      <td>1.2 Ko</td>
+      <td>odoo/emails/by_sector/odoo_non_specifie.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole d optique</td>
+      <td>2</td>
+      <td>817 octets</td>
+      <td>odoo/emails/by_sector/odoo_ecole_d_optique.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole de cuisine et gastronomie</td>
+      <td>2</td>
+      <td>981 octets</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_cuisine_et_gastronomie.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole de ressources humaines</td>
+      <td>2</td>
+      <td>937 octets</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_ressources_humaines.csv</td>
+    </tr>
+  
+    <tr>
+      <td>campus connecte</td>
+      <td>1</td>
+      <td>583 octets</td>
+      <td>odoo/emails/by_sector/odoo_campus_connecte.csv</td>
+    </tr>
+  
+    <tr>
+      <td>classes preparatoires aux concours</td>
+      <td>1</td>
+      <td>525 octets</td>
+      <td>odoo/emails/by_sector/odoo_classes_preparatoires_aux_concours.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole d architecture</td>
+      <td>1</td>
+      <td>643 octets</td>
+      <td>odoo/emails/by_sector/odoo_ecole_d_architecture.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole d assurance</td>
+      <td>1</td>
+      <td>597 octets</td>
+      <td>odoo/emails/by_sector/odoo_ecole_d_assurance.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole de jeux video et d animation</td>
+      <td>1</td>
+      <td>689 octets</td>
+      <td>odoo/emails/by_sector/odoo_ecole_de_jeux_video_et_d_animation.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole des metiers de l agrobusiness et de l environnement</td>
+      <td>1</td>
+      <td>842 octets</td>
+      <td>odoo/emails/by_sector/odoo_ecole_des_metiers_de_l_agrobusiness_et_de_l_environnement.csv</td>
+    </tr>
+  
+    <tr>
+      <td>ecole des metiers de l esthetique cosmetique</td>
+      <td>1</td>
+      <td>538 octets</td>
+      <td>odoo/emails/by_sector/odoo_ecole_des_metiers_de_l_esthetique_cosmetique.csv</td>
+    </tr>
+  
+    <tr>
+      <td>lycee gt</td>
+      <td>1</td>
+      <td>524 octets</td>
+      <td>odoo/emails/by_sector/odoo_lycee_gt.csv</td>
+    </tr>
+  
+    <tr>
+      <td>universite</td>
+      <td>1</td>
+      <td>532 octets</td>
+      <td>odoo/emails/by_sector/odoo_universite.csv</td>
+    </tr>
+  
+    </tbody>
+  </table>
+
+  <h2>2. Procédure d'importation dans Odoo</h2>
+  
+  <div class="step">
+    <h3><span class="step-number">1</span> Connexion à Odoo</h3>
+    <p>Connectez-vous à votre instance Odoo avec un compte administrateur ou ayant les droits d'importation.</p>
+  </div>
+  
+  <div class="step">
+    <h3><span class="step-number">2</span> Accéder au module Contacts</h3>
+    <p>Dans le menu principal, cliquez sur "Contacts" pour accéder à la liste des contacts.</p>
+  </div>
+  
+  <div class="step">
+    <h3><span class="step-number">3</span> Lancer l'importation</h3>
+    <p>Cliquez sur le bouton "Importer" situé dans la barre d'outils en haut de la page.</p>
+  </div>
+  
+  <div class="step">
+    <h3><span class="step-number">4</span> Sélection du fichier</h3>
+    <p>Cliquez sur "Choisir un fichier" et sélectionnez le fichier CSV à importer:</p>
+    <ul>
+      <li>Utilisez le fichier principal (<strong>odoo_schools_with_emails.csv</strong>) pour importer toutes les écoles</li>
+      <li>Ou choisissez un fichier par secteur pour une importation ciblée</li>
+    </ul>
+    <div class="warning">
+      <strong>Important:</strong> Vérifiez que le format du fichier est bien reconnu comme CSV.
+    </div>
+  </div>
+  
+  <div class="step">
+    <h3><span class="step-number">5</span> Configuration de l'importation</h3>
+    <p>Odoo va analyser le fichier et vous proposer de configurer le mappage des colonnes.</p>
+    <ul>
+      <li>Vérifiez que la colonne "id" est bien reconnue comme "ID externe"</li>
+      <li>Vérifiez que les autres colonnes sont correctement mappées</li>
+      <li>Pour le champ "industry_id" (secteur), choisissez "Créer si introuvable"</li>
+      <li>Pour "tag_ids" (étiquettes), choisissez "Créer si introuvable" et "Séparés par virgule"</li>
+    </ul>
+  </div>
+  
+  <div class="step">
+    <h3><span class="step-number">6</span> Options d'importation</h3>
+    <p>Dans les options d'importation, sélectionnez:</p>
+    <ul>
+      <li>Si vous importez pour la première fois: laissez les options par défaut</li>
+      <li>Si vous mettez à jour des données existantes: cochez "Les ID externes existent déjà"</li>
+    </ul>
+  </div>
+  
+  <div class="step">
+    <h3><span class="step-number">7</span> Validation et importation</h3>
+    <p>Cliquez sur "Valider" pour vérifier que l'importation fonctionne correctement sans erreurs.</p>
+    <p>Si tout est correct, cliquez sur "Importer" pour finaliser le processus.</p>
+  </div>
+
+  <h2>3. Structure des données</h2>
+  
+  <p>Les fichiers CSV contiennent les champs suivants:</p>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Champ</th>
+        <th>Description</th>
+        <th>Exemple</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>id</td>
+        <td>Identifiant externe unique pour chaque école</td>
+        <td>school_esiea_ingenieur_e_s_d_un_numerique_utile_laval_admissions_at_esiea_fr</td>
+      </tr>
+      <tr>
+        <td>name</td>
+        <td>Nom complet de l'école</td>
+        <td>ESIEA, ingénieur·e·s d'un numérique utile - Laval</td>
+      </tr>
+      <tr>
+        <td>is_company</td>
+        <td>Indique que l'entrée est une entreprise/organisation</td>
+        <td>true</td>
+      </tr>
+      <tr>
+        <td>company_type</td>
+        <td>Type d'entité dans Odoo</td>
+        <td>company</td>
+      </tr>
+      <tr>
+        <td>email</td>
+        <td>Adresse email principale de l'école</td>
+        <td>admissions@esiea.fr</td>
+      </tr>
+      <tr>
+        <td>phone</td>
+        <td>Numéro de téléphone (si disponible)</td>
+        <td>01 82 39 25 00</td>
+      </tr>
+      <tr>
+        <td>website</td>
+        <td>Site web (si disponible)</td>
+        <td>https://www.esiea.fr</td>
+      </tr>
+      <tr>
+        <td>city</td>
+        <td>Ville où se trouve l'école</td>
+        <td>Laval</td>
+      </tr>
+      <tr>
+        <td>country_id</td>
+        <td>Pays (toujours "France" pour ce jeu de données)</td>
+        <td>France</td>
+      </tr>
+      <tr>
+        <td>industry_id</td>
+        <td>Secteur d'activité (catégorie d'école)</td>
+        <td>École d'ingénieurs</td>
+      </tr>
+      <tr>
+        <td>tag_ids</td>
+        <td>Étiquettes pour catégoriser les contacts</td>
+        <td>École,Diplomeo</td>
+      </tr>
+      <tr>
+        <td>ref</td>
+        <td>Référence externe (URL de la page Diplomeo)</td>
+        <td>https://diplomeo.com/etablissement-esiea_ingenieur_e_s_d_un_numerique_utile_laval-1848</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. Après l'importation</h2>
+  
+  <p>Une fois l'importation terminée:</p>
+  <ul>
+    <li>Vérifiez que les écoles apparaissent bien dans la liste des contacts</li>
+    <li>Vérifiez que les secteurs d'activité ont été correctement créés</li>
+    <li>Vérifiez que les étiquettes "École" et "Diplomeo" ont été appliquées</li>
+    <li>Les écoles sont importées comme des organisations (entreprises), ce qui vous permettra d'ajouter des contacts individuels ultérieurement</li>
+  </ul>
+  
+  <div class="info">
+    <strong>Conseil:</strong> Vous pouvez créer une vue filtrée pour n'afficher que les contacts avec l'étiquette "École" ou "Diplomeo".
+  </div>
+
+  <h2>5. Résolution des problèmes courants</h2>
+  
+  <h3>Problème: Erreur de format CSV</h3>
+  <p><strong>Solution:</strong> Vérifiez que le fichier est bien au format UTF-8. Si nécessaire, ouvrez le fichier dans un éditeur de texte et enregistrez-le avec l'encodage UTF-8.</p>
+  
+  <h3>Problème: Les ID externes existent déjà</h3>
+  <p><strong>Solution:</strong> Si vous réimportez des données, cochez l'option "Les ID externes existent déjà" pour mettre à jour les enregistrements existants plutôt que d'en créer de nouveaux.</p>
+  
+  <h3>Problème: Certains champs ne sont pas importés</h3>
+  <p><strong>Solution:</strong> Vérifiez le mappage des colonnes dans l'interface d'importation d'Odoo. Assurez-vous que chaque colonne est correctement associée au champ Odoo correspondant.</p>
+
+  <footer>
+    <p>Guide généré automatiquement le 3/20/2025, 3:20:50 PM</p>
+    <p>Pour toute question, contactez l'équipe d'administration</p>
+  </footer>
+</body>
+</html>
+  

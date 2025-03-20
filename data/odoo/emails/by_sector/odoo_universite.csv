@@ -1,0 +1,2 @@
+id,name,is_company,company_type,customer_rank,supplier_rank,type,email,phone,mobile,website,street,city,zip,country_id,function,title,parent_id,user_id,team_id,industry_id,comment,tag_ids,vat,ref,lang,date
+school_icr_institut_catholique_de_rennes_communication_at_icrennes_org,ICR - Institut catholique de Rennes,true,company,1,0,contact,communication@icrennes.org,33299058475,,Non trouvé,,Bruz,,France,,,,,,Université,,"École,Diplomeo",,https://diplomeo.com/etablissement-icr_institut_catholique_de_rennes-2771,fr_FR,2025-03-20

@@ -11,48 +11,71 @@
 async function extractSchoolLinks(page) {
   return await page.evaluate(() => {
     try {
+      // Utiliser un Set pour stocker les URLs uniques
+      const uniqueUrls = new Set();
       const links = [];
       
       // Approche 1: Sélecteur standard
       let items = document.querySelectorAll('ul[data-cy="hub-schools-results"] li');
-      console.log(`Approche 1: ${items.length} écoles trouvées`);
+      console.log(`Approche 1: ${items.length} éléments trouvés`);
       
       // Si aucun résultat, essayer une approche alternative
       if (items.length === 0) {
         // Approche 2: Recherche plus générale des éléments de groupe
         items = document.querySelectorAll('.tw-group');
-        console.log(`Approche 2: ${items.length} écoles trouvées`);
+        console.log(`Approche 2: ${items.length} éléments trouvés`);
       }
       
       // Si toujours aucun résultat, essayer une recherche directe des liens
       if (items.length === 0) {
-        // Approche 3: Recherche directe des liens d'établissements
-        const directLinks = document.querySelectorAll('a[href*="/etablissement-"]');
-        console.log(`Approche 3: ${directLinks.length} liens vers des écoles trouvés`);
+        // Approche 3: Recherche directe des liens d'établissements (plus large)
+        const directLinks = Array.from(document.querySelectorAll('a[href*="/etablissement-"], a[href*="/ecole-"], a[href*="/universite-"], a[href*="/formation-"]'));
+        console.log(`Approche 3: ${directLinks.length} liens directs trouvés`);
         
         directLinks.forEach(link => {
           const name = link.textContent.trim();
+          if (!name) return; // Ignorer les liens sans texte
+          
           // Corriger l'URL pour ne pas avoir de duplication du domaine
           const href = link.getAttribute('href');
+          if (!href || !href.includes('/etablissement-')) return; // Ignorer les liens qui ne pointent pas vers des établissements
+          
           const url = href.startsWith('http') ? href : 'https://diplomeo.com' + href;
+          
+          // Ne pas ajouter si l'URL existe déjà
+          if (uniqueUrls.has(url)) return;
+          uniqueUrls.add(url);
           
           // Essayer de trouver le secteur et la ville via les parents
           let sector = 'Non spécifié';
           let city = 'Non spécifiée';
           
-          // Rechercher dans les éléments parents
-          const parent = link.closest('.tw-group') || link.parentElement;
-          if (parent) {
-            const sectorElement = parent.querySelector('.tw-text-body-xs.tw-font-sans.tw-text-gray-800');
-            if (sectorElement) sector = sectorElement.textContent.trim();
+          // Rechercher dans les éléments parents (jusqu'à 5 niveaux)
+          let parent = link;
+          for (let i = 0; i < 5; i++) {
+            parent = parent.parentElement;
+            if (!parent) break;
             
-            const cityElement = parent.querySelector('.tw-text-body-xs.tw-font-semibold');
-            if (cityElement) city = cityElement.textContent.trim();
+            // Essayer de trouver le secteur
+            const sectorElement = parent.querySelector('.tw-text-body-xs.tw-font-sans.tw-text-gray-800, .tw-text-xs');
+            if (sectorElement && !sector.includes('spécifié')) {
+              sector = sectorElement.textContent.trim();
+            }
+            
+            // Essayer de trouver la ville
+            const cityElement = parent.querySelector('.tw-text-body-xs.tw-font-semibold, .tw-text-xs.tw-font-bold');
+            if (cityElement && !city.includes('spécifiée')) {
+              city = cityElement.textContent.trim();
+            }
+            
+            // Si on a trouvé les deux, on arrête
+            if (!sector.includes('spécifié') && !city.includes('spécifiée')) break;
           }
           
           links.push({ name, url, sector, city });
         });
         
+        console.log(`Approche 3: ${links.length} écoles uniques extraites`);
         return links;
       }
       
@@ -62,16 +85,22 @@ async function extractSchoolLinks(page) {
           const linkElement = item.querySelector('a[href*="/etablissement-"]');
           if (linkElement) {
             const name = linkElement.textContent.trim();
+            if (!name) return; // Ignorer les liens sans texte
+            
             // Corriger l'URL pour ne pas avoir de duplication du domaine
             const href = linkElement.getAttribute('href');
             const url = href.startsWith('http') ? href : 'https://diplomeo.com' + href;
             
+            // Ne pas ajouter si l'URL existe déjà
+            if (uniqueUrls.has(url)) return;
+            uniqueUrls.add(url);
+            
             // Récupération du secteur
-            const sectorElement = item.querySelector('.tw-text-body-xs.tw-font-sans.tw-text-gray-800');
+            const sectorElement = item.querySelector('.tw-text-body-xs.tw-font-sans.tw-text-gray-800, .tw-text-xs');
             const sector = sectorElement ? sectorElement.textContent.trim() : 'Non spécifié';
             
             // Récupération de la ville
-            const cityElement = item.querySelector('.tw-text-body-xs.tw-font-semibold');
+            const cityElement = item.querySelector('.tw-text-body-xs.tw-font-semibold, .tw-text-xs.tw-font-bold');
             const city = cityElement ? cityElement.textContent.trim() : 'Non spécifiée';
             
             links.push({ name, url, sector, city });
@@ -81,6 +110,51 @@ async function extractSchoolLinks(page) {
         }
       });
       
+      // Approche supplémentaire: rechercher directement dans tous les éléments qui pourraient contenir des écoles
+      if (links.length < 10) {
+        const containers = document.querySelectorAll('.tw-flex.tw-flex-col, .tw-grid');
+        containers.forEach(container => {
+          const linkElements = container.querySelectorAll('a[href*="/etablissement-"]');
+          linkElements.forEach(linkElement => {
+            const name = linkElement.textContent.trim();
+            if (!name) return;
+            
+            const href = linkElement.getAttribute('href');
+            const url = href.startsWith('http') ? href : 'https://diplomeo.com' + href;
+            
+            if (uniqueUrls.has(url)) return;
+            uniqueUrls.add(url);
+            
+            let sector = 'Non spécifié';
+            let city = 'Non spécifiée';
+            
+            // Chercher dans les éléments voisins
+            const parent = linkElement.closest('.tw-flex, .tw-grid-item');
+            if (parent) {
+              const textElements = Array.from(parent.querySelectorAll('span, p, div')).filter(el => el !== linkElement);
+              
+              // Le premier élément qui ressemble à un secteur
+              const possibleSector = textElements.find(el => {
+                const text = el.textContent.trim();
+                return text.length > 0 && text.length < 50 && !text.match(/^\d/);
+              });
+              
+              // Le premier élément qui ressemble à une ville (court, possiblement avec un code postal)
+              const possibleCity = textElements.find(el => {
+                const text = el.textContent.trim();
+                return text.length > 0 && text.length < 30 && (text.match(/^\d{5}/) || text.match(/^[A-Z]/));
+              });
+              
+              if (possibleSector) sector = possibleSector.textContent.trim();
+              if (possibleCity) city = possibleCity.textContent.trim();
+            }
+            
+            links.push({ name, url, sector, city });
+          });
+        });
+      }
+      
+      console.log(`${links.length} écoles uniques extraites avec succès`);
       return links;
     } catch (error) {
       console.error('Erreur globale lors de l\'extraction:', error);

@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Le Cordon Bleu Paris",
+    "email": "paris@cordonbleu.edu",
+    "sector": "École de cuisine et gastronomie",
+    "city": "Paris",
+    "url": "https://diplomeo.com/etablissement-le_cordon_bleu_paris-9508",
+    "phone": "33185651500",
+    "website": "https://www.cordonbleu.edu/paris/accueil/fr?utm_source=diplomeos",
+    "address": "",
+    "formations": "",
+    "description": ""
+  },
+  {
+    "name": "FERRANDI Paris : Campus de Rennes",
+    "email": "ferrandi-rennes@ille-et-vilaine.cci.fr",
+    "sector": "École de cuisine et gastronomie",
+    "city": "Rennes",
+    "url": "https://diplomeo.com/etablissement-ferrandi_paris_campus_de_rennes-9669",
+    "phone": "0299336350",
+    "website": "https://www.ferrandi-paris.com/fr/nos-campus/rennes?utm_source=diplomeos",
+    "address": "",
+    "formations": "",
+    "description": ""
+  }
+]

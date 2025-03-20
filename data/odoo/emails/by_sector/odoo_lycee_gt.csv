@@ -1,0 +1,2 @@
+id,name,is_company,company_type,customer_rank,supplier_rank,type,email,phone,mobile,website,street,city,zip,country_id,function,title,parent_id,user_id,team_id,industry_id,comment,tag_ids,vat,ref,lang,date
+school_ecole_internationale_tunon_angers_angers_at_ecoletunon_com,École Internationale Tunon - Angers,true,company,1,0,contact,angers@ecoletunon.com,33259582660,,Non trouvé,,Angers,,France,,,,,,Lycée GT,,"École,Diplomeo",,https://diplomeo.com/etablissement-ecole_internationale_tunon_angers-22757,fr_FR,2025-03-20
